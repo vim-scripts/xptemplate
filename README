@@ -1,0 +1,49 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2611
+
+Code snippets engine for Vim, with snippets library.
+XPTemplate let you write codes in a smooth, quick and comfortable way.
+
+=======================   Usage   =======================
+
+vim xpt.c
+// Type  "for<C-\>" :
+for (i = 0; i < len; ++i) {
+   /* cursor */
+}
+Press <tab>,<tab>.. to navigate through "i", "0", "len". Cursor will finally stops at "/* cursor */".
+
+
+=======================   Features   =======================
+
+* Live update while typing
+* Navigate forward and backward. <Tab> and <S-Tab>
+* Embed language support like JAVASCRIPT in HTML. Or HTML in PHP
+* Wrapper
+* Smart indent
+* Spacing and line-break of snippet can be easily changed to fit your coding style
+* Pop up menu friendly
+
+
+=======================   Resources   =======================
+
+Screencast : 0.3.9 :  http://code.google.com/p/xptemplate/wiki/ScreenCasts;
+
+Get the latest trunk from svn : http://xptemplate.googlecode.com/svn/trunk/dist;
+Project Home : http://code.google.com/p/xptemplate;
+Discuss, Bug report, Feature request : http://groups.google.com/group/xptemplate;
+Follow me: http://twitter.com/xptemplate;
+
+*** Troubleshoot / supertab support / bracket complete / other question ***
+http://code.google.com/p/xptemplate/wiki/FAQ
+
+
+=======================   Compatibilities   =======================
+
+Supported platform:  Linux, WinXP, // [g]vim 7.2
+Supported Language:  ada c cabal cpp cs css dot erlang gitconfig gnuplot haskell html java javascript lex lua make ocaml perl php ps1 python r ruby(eruby) scheme sh tcl tex vim xml xpt xslt yacc
+
+**Bundles: c_autoimplem cpp_autoimplem javascript_jquery
+
+
+Special Thanks to ^0^ : 
+Christian.Coutinho  Vincent Berthoux  Fabio  Simon Ruderich
