@@ -8,36 +8,42 @@ runtime plugin/debug.vim
 let s:escapeHead   = '\v(\\*)\V'
 let s:unescapeHead = '\v(\\*)\1\\?\V'
 let s:ep           = '\%(' . '\%(\[^\\]\|\^\)' . '\%(\\\\\)\*' . '\)' . '\@<='
-fun! s:SetIfNotExist(k, v) 
-    if !exists( a:k )
-        exe "let" a:k "=" string( a:v )
-    endif
-endfunction 
-call s:SetIfNotExist('g:xptemplate_key'                 , '<C-\>'	)
-call s:SetIfNotExist('g:xptemplate_key_pum_only'        , '<C-r>' . g:xptemplate_key	)
-call s:SetIfNotExist('g:xptemplate_nav_next'            , '<Tab>'	)
-call s:SetIfNotExist('g:xptemplate_nav_prev'            , '<S-Tab>'	)
-call s:SetIfNotExist('g:xptemplate_nav_cancel'          , '<cr>'	)
-call s:SetIfNotExist('g:xptemplate_goback'              , '<C-g>'	)
-call s:SetIfNotExist('g:xptemplate_to_right'            , '<C-l>'	)
-call s:SetIfNotExist('g:xptemplate_key_2'               ,  g:xptemplate_key	)
-call s:SetIfNotExist('g:xptemplate_nav_next_2'          ,  g:xptemplate_nav_next	)
-call s:SetIfNotExist('g:xptemplate_fallback'            , '<Plug>XPTrawKey'	)
-call s:SetIfNotExist('g:xptemplate_minimal_prefix'      , 1	)
-call s:SetIfNotExist('g:xptemplate_pum_tab_nav'         , 0	)
-call s:SetIfNotExist('g:xptemplate_strict'              , 2	)
-call s:SetIfNotExist('g:xptemplate_highlight'           , 'next'	)
-call s:SetIfNotExist('g:xptemplate_brace_complete'      , 1	)
-call s:SetIfNotExist('g:xptemplate_strip_left'          , 1	)
-call s:SetIfNotExist('g:xptemplate_fix'                 , 1	)
-call s:SetIfNotExist('g:xptemplate_ph_pum_accept_empty' , 1	)
-call s:SetIfNotExist('g:xptemplate_vars'                , ''	)
-call s:SetIfNotExist('g:xptemplate_bundle'              , ''	)
-call s:SetIfNotExist('g:xptemplate_snippet_folders'     , []	)
-call s:SetIfNotExist('g:xptemplate_map'                 , ''	)
-call s:SetIfNotExist('g:xpt_post_action', '')
+call XPT#setIfNotExist('g:xptemplate_key'	, '<C-\>' )
+call XPT#setIfNotExist('g:xptemplate_key_force_pum'	, '<C-r>' . g:xptemplate_key )
+call XPT#setIfNotExist('g:xptemplate_key_pum_only'	, '<C-r><C-r>' . g:xptemplate_key )
+call XPT#setIfNotExist('g:xptemplate_nav_next'	, '<Tab>' )
+call XPT#setIfNotExist('g:xptemplate_nav_prev'	, '<S-Tab>' )
+call XPT#setIfNotExist('g:xptemplate_nav_cancel'	, '<cr>' )
+call XPT#setIfNotExist('g:xptemplate_goback'	, '<C-g>' )
+call XPT#setIfNotExist('g:xptemplate_to_right'	, '<C-l>' )
+call XPT#setIfNotExist('g:xptemplate_key_2'	, g:xptemplate_key )
+call XPT#setIfNotExist('g:xptemplate_nav_next_2'	, g:xptemplate_nav_next )
+call XPT#setIfNotExist('g:xptemplate_fallback'	, '<Plug>XPTrawKey' )
+call XPT#setIfNotExist('g:xptemplate_fallback_condition'	, '\V\c<Tab>' )
+call XPT#setIfNotExist('g:xptemplate_move_even_with_pum'	, g:xptemplate_nav_next !=? '<Tab>' )
+call XPT#setIfNotExist('g:xptemplate_always_show_pum'	, 0 )
+call XPT#setIfNotExist('g:xptemplate_minimal_prefix'	, 1 )
+call XPT#setIfNotExist('g:xptemplate_pum_tab_nav'	, 0 )
+call XPT#setIfNotExist('g:xptemplate_strict'	, 2 )
+call XPT#setIfNotExist('g:xptemplate_highlight'	, 'next' )
+call XPT#setIfNotExist('g:xptemplate_highlight_nested'	, 0 )
+call XPT#setIfNotExist('g:xptemplate_brace_complete'	, 1 )
+call XPT#setIfNotExist('g:xptemplate_strip_left'	, 1 )
+call XPT#setIfNotExist('g:xptemplate_fix'	, 1 )
+call XPT#setIfNotExist('g:xptemplate_ph_pum_accept_empty'	, 1 )
+call XPT#setIfNotExist('g:xptemplate_vars'	, '' )
+call XPT#setIfNotExist('g:xptemplate_bundle'	, '' )
+call XPT#setIfNotExist('g:xptemplate_snippet_folders'	, [] )
+call XPT#setIfNotExist('g:xpt_post_action', '')
 if g:xptemplate_fallback == ''
     let g:xptemplate_fallback = '<NOP>'
+endif
+if g:xptemplate_fallback == g:xptemplate_key
+      \ || g:xptemplate_fallback == g:xptemplate_key_force_pum
+    let g:xptemplate_fallback = 'nore:' . g:xptemplate_fallback
+endif
+if g:xptemplate_brace_complete is 1
+    let g:xptemplate_brace_complete = '([{"'''
 endif
 let s:path = expand( "<sfile>" )
 let s:filename = 'xptemplate.conf.vim'
@@ -53,21 +59,31 @@ let g:XPTpvs = {}
 let g:XPTmappings = {
       \ 'popup_old'     : "<C-v><C-v><BS><C-r>=XPTemplateStart(0,{'popupOnly':1})<cr>", 
       \ 'trigger_old'   : "<C-v><C-v><BS><C-r>=XPTemplateStart(0)<cr>", 
-      \ 'popup'         : "<C-r>=XPTemplateStart(0,{'popupOnly':1})<cr>", 
-      \ 'trigger'       : "<C-r>=XPTemplateStart(0)<cr>", 
+      \ 'popup'         : "<C-r>=XPTemplateStart(0,{'k':'%s','popupOnly':1})<cr>", 
+      \ 'force_pum'     : "<C-r>=XPTemplateStart(0,{'k':'%s','forcePum':1})<cr>", 
+      \ 'trigger'       : "<C-r>=XPTemplateStart(0,{'k':'%s'})<cr>", 
       \ 'wrapTrigger'   : "\"0s<C-r>=XPTemplatePreWrap(@0)<cr>", 
       \ 'incSelTrigger' : "<C-c>`>a<C-r>=XPTemplateStart(0)<cr>", 
       \ 'excSelTrigger' : "<C-c>`>i<C-r>=XPTemplateStart(0)<cr>", 
       \ 'selTrigger'    : (&selection == 'inclusive') ?
-      \                       "<C-c>`>a<C-r>=XPTemplateStart(0)<cr>" 
-      \                     : "<C-c>`>i<C-r>=XPTemplateStart(0)<cr>", 
+      \                       "<C-c>`>a<C-r>=XPTemplateStart(0,{'k':'%s'})<cr>" 
+      \                     : "<C-c>`>i<C-r>=XPTemplateStart(0,{'k':'%s'})<cr>", 
       \ }
-exe "imap     <silent> <Plug>XPTfallback"          g:xptemplate_fallback
+if g:xptemplate_fallback =~ '\V\^nore:'
+    let g:xptemplate_fallback = g:xptemplate_fallback[ 5: ]
+    exe "inoremap <silent> <Plug>XPTfallback"          g:xptemplate_fallback
+else
+    exe "imap     <silent> <Plug>XPTfallback"          g:xptemplate_fallback
+endif
 exe "inoremap <silent> <Plug>XPTrawKey"            g:xptemplate_key
-exe "inoremap <silent>" g:xptemplate_key           g:XPTmappings.trigger
+fun! s:EscapeMap( s ) 
+    return substitute( a:s, '\V>', '++', 'g' )
+endfunction 
+exe "inoremap <silent>" g:xptemplate_key           printf( g:XPTmappings.trigger      , s:EscapeMap( g:xptemplate_key )          )
 exe "xnoremap <silent>" g:xptemplate_key           g:XPTmappings.wrapTrigger
-exe "snoremap <silent>" g:xptemplate_key           g:XPTmappings.selTrigger
-exe "inoremap <silent>" g:xptemplate_key_pum_only  g:XPTmappings.popup
+exe "snoremap <silent>" g:xptemplate_key           printf( g:XPTmappings.selTrigger   , s:EscapeMap( g:xptemplate_key )          )
+exe "inoremap <silent>" g:xptemplate_key_pum_only  printf( g:XPTmappings.popup        , s:EscapeMap( g:xptemplate_key_pum_only ) )
+exe "inoremap <silent>" g:xptemplate_key_force_pum printf( g:XPTmappings.force_pum    , s:EscapeMap( g:xptemplate_key_force_pum ))
 if g:xptemplate_key_2 != g:xptemplate_key
     exe "inoremap <silent>" g:xptemplate_key_2           g:XPTmappings.trigger
     exe "xnoremap <silent>" g:xptemplate_key_2           g:XPTmappings.wrapTrigger
@@ -140,11 +156,19 @@ augroup XPTftInit
   au!
   au FileType * call XPTfiletypeInit()
 augroup END
-if g:xptemplate_brace_complete
+if stridx( g:xptemplate_brace_complete, '(' ) >= 0
     inoremap <silent> ( <C-v><C-v><BS><C-r>=XPTtgr('(',{'noliteral':1,'k':'('})<cr>
+endif
+if stridx( g:xptemplate_brace_complete, '[' ) >= 0
     inoremap <silent> [ <C-v><C-v><BS><C-r>=XPTtgr('[',{'noliteral':1,'k':'['})<cr>
+endif
+if stridx( g:xptemplate_brace_complete, '{' ) >= 0
     inoremap <silent> { <C-v><C-v><BS><C-r>=XPTtgr('{',{'noliteral':1,'k':'{'})<cr>
+endif
+if stridx( g:xptemplate_brace_complete, '''' ) >= 0
     inoremap <silent> ' <C-v><C-v><BS><C-r>=XPTtgr('''',{'noliteral':1,'k':''''})<cr>
+endif
+if stridx( g:xptemplate_brace_complete, '"' ) >= 0
     inoremap <silent> " <C-v><C-v><BS><C-r>=XPTtgr('"',{'noliteral':1,'k':'"'})<cr>
 endif
 let bs=&bs

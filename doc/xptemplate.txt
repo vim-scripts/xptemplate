@@ -266,24 +266,28 @@
 
 		|g:xptemplate_key|
 		|g:xptemplate_key_pum_only|
+		|g:xptemplate_key_force_pum|
 		|g:xptemplate_nav_next|
 		|g:xptemplate_nav_prev|
 		|g:xptemplate_nav_cancel|
 		|g:xptemplate_goback|
 		|g:xptemplate_to_right|
 		|g:xptemplate_fallback|
-		|g:xptemplate_brace_complete|
 
 	Options:
-		|g:xptemplate_minimal_prefix|
-		|g:xptemplate_pum_tab_nav|
-		|g:xptemplate_strict|
-		|g:xptemplate_highlight|
-		|g:xptemplate_strip_left|
-		|g:xptemplate_ph_pum_accept_empty|
-		|g:xptemplate_vars|
+		|g:xptemplate_move_even_with_pum|
+		|g:xptemplate_always_show_pum|
+		|g:xptemplate_brace_complete|
 		|g:xptemplate_bundle|
+		|g:xptemplate_highlight|
+		|g:xptemplate_highlight_nested|
+		|g:xptemplate_minimal_prefix|
+		|g:xptemplate_ph_pum_accept_empty|
+		|g:xptemplate_pum_tab_nav|
 		|g:xptemplate_snippet_folders|
+		|g:xptemplate_strict|
+		|g:xptemplate_strip_left|
+		|g:xptemplate_vars|
 
 							     *<Plug>XPTrawKey*
 	Key mapping defined as: >
@@ -301,12 +305,25 @@
 	<Tab> if there is no snippet key matched.
 
 
-		      *i_<C-r><C-\>* *xpt-key-pum* *g:xptemplate_key_pum_only*
-					       {default:<C-r>g:xptemplate_key}
+		 *i_<C-r><C-r><C-\>* *xpt-key-pum* *g:xptemplate_key_pum_only*
+					  {default:<C-r><C-r>g:xptemplate_key}
 	Show pop up menu at cursor position. Example: >
 		let g:xptemplate_key_pum_only = '<S-Tab>'
-<	By default, this key map is set to '<C-r>' concatenated with
-	|g:xptemplate_key| : '<C-r><C-\>'.
+<	By default, this key map is set to '<C-r><C-r>' concatenated with
+	|g:xptemplate_key| : '<C-r><C-r><C-\>'.
+
+
+						  *g:xptemplate_key_force_pum*
+					       {default:<C-r>g:xptemplate_key}
+	Behave like that with |g:xptemplate_always_show_pum| set.
+
+	If more than one snippet starts with( or exactly equals to ) the text
+	before cursor, pop up menu shows.
+
+	This key triggers snippet only when there is only one snippet of name
+	starts with the text before cursor.
+
+	See also: |g:xptemplate_always_show_pum|.
 
 
 	       *i_<tab>*  *s_<tab>* *xpt-key-navigate* *g:xptemplate_nav_next*
@@ -355,6 +372,32 @@
 		let g:xptemplate_fallback = '<C-n>'
 <
 
+					     *g:xptemplate_move_even_with_pum*
+								   {default:0}
+	If set to 1, |g:xptemplate_nav_next| does not care whether pop up menu
+	shown or not. It will always move cursor to next item.
+
+	Otherwise, |g:xptemplate_nav_next| fall back to original mapping. This
+	could be helpfull for xpt working with supertab together.
+
+
+						*g:xptemplate_always_show_pum*
+								   {default:0}
+	If set to 1, snippets is not triggered but popup menu shows even when
+	text user typed before cursor matches a snippet name.
+
+	For example, you have three snippets defined of names: "for", "forever"
+	and "forr". Typing "for<C-\>" results in a popup menu if
+	|g:xptemplate_always_show_pum| set to 1: >
+		for
+	       |for      |
+	       |forloop  |
+	       |forr     |
+<	Otherwise, "for<C-\>" triggers snippet "for".
+
+	See also: |g:xptemplate_key_force_pum|.
+
+
 						 *g:xptemplate_brace_complete*
 								   {default:1}
 	If set to 1, bracket characters are automatically expanded to bracket
@@ -362,6 +405,11 @@
 		(  )
 	          \______| cursor stops in mid of pairs of bracket
 <	"(", "[", "{", "'" and '"' are affected by this setting.
+	
+	If set to string, only bracket or quote chars included in this setting
+	will be mapped. For example: >
+		let g:xptemplate_brace_complete = '([{'
+<	With this setting, quotes are not mapped.
 
 
 		    *n_<C-g>* *i_<C-g>* *xpt-key-goback* *g:xptemplate_goback*
@@ -443,6 +491,21 @@
 			   \______\\\_____________ highlighted
 <
 	Set |g:xptemplate_highlight| to '' to disable highlight.
+
+
+					       *g:xptemplate_highlight_nested*
+								   {default:0}
+	If set to 1, highlight is also applied to outer snippet, not only the
+	deepest nested one. For example, If set to 1, the following positions
+	are highlighted: >
+				  ________________________| highlighted
+			        _/ _/        ___/
+		for ( call( me ) = 0; call < len; call++ ) {
+		    /* cursor */
+		    ~~~~~~~~~~~\__________________________| highlighted
+		}
+<	The first highlight position is from nested snippet "(". Others are
+	from outer snippet "for".
 
 
 						     *xpt-customize-highlight*

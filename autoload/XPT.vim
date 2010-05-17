@@ -22,15 +22,41 @@ let XPT#nonEscaped =
       \ . '\@<='
 
 
+fun! XPT#setIfNotExist(k, v) "{{{
+    if !exists( a:k )
+        exe "let" a:k "=" string( a:v )
+    endif
+endfunction "}}}
+
 fun! XPT#warn( msg ) "{{{
     echohl WarningMsg
     echom a:msg
     echohl
 endfunction "}}}
+fun! XPT#info( msg ) "{{{
+    echom a:msg
+endfunction "}}}
 fun! XPT#error( msg ) "{{{
     echohl ErrorMsg
     echom a:msg
     echohl
+endfunction "}}}
+
+fun! XPT#fallback( fbs ) "{{{
+    let fbs = a:fbs
+    if len( fbs ) > 0
+        let [ key, flag ] = fbs[ 0 ]
+        call remove( fbs, 0 )
+        if flag == 'feed'
+            call feedkeys( key, 'mt' )
+            return ''
+        else
+            " flag == 'expr'
+            return key
+        endif
+    else
+        return ''
+    endif
 endfunction "}}}
 
 fun! XPT#softTabStop() "{{{
@@ -67,8 +93,9 @@ fun! XPT#LeadingTabToSpace( str ) "{{{
     
     let str = "\n" . a:str
 
-    let last = ''
+    let tabspaces = repeat( ' ', &tabstop )
 
+    let last = ''
     while str != last
         let last = str
         let str = substitute( str, '\n	*\zs	', tabspaces, 'g' )

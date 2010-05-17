@@ -154,13 +154,16 @@ XSET content|ontype=html_cont_ontype()
 ..XPT
 
 
-XPT _tag hidden " <$_xSnipName >..</$_xSnipName>
+XPT _tag wrap=content hidden " <$_xSnipName >..</$_xSnipName>
 XSET content|ontype=html_cont_ontype()
 <`$_xSnipName^>`content^^`content^html_cont_helper()^</`$_xSnipName^>
 ..XPT
 
+" XPT _t hidden " ..
+" <`$_xSnipName^>`cont^</`$_xSnipName^>
 
-XPT _tagAttr hidden " <$_xSnipName >..</$_xSnipName>
+
+XPT _tagAttr wrap=content hidden " <$_xSnipName >..</$_xSnipName>
 XSET content|ontype=html_cont_ontype()
 XSET att?=Echo('')
 XSET att?|post=Echo(V()=~'\V\^ \$\|att?' ? '' : V())
@@ -265,7 +268,7 @@ XPT fulltable hidden " create a full table
 `createTable()^
 
 
-XPT a " <a href...
+XPT a wrap=cursor " <a href...
 <a href="`href^">`cursor^</a>
 ..XPT
 
@@ -297,7 +300,7 @@ XSET att?=Embed( 'name="`name^"' )
 
 
 " TODO enctype list : application/x-www-form-urlencoded
-XPT form " <form ..>..</form>
+XPT form wrap=cursor " <form ..>..</form>
 XSET method=ChooseStr( 'GET', 'POST' )
 <form action="`action^" method="`method^" accept-charset="`html_enc()^" enctype="multipart/form-data">
     `cursor^
@@ -330,6 +333,10 @@ XPT fieldset " <fieldset ..
     `cursor^
 </fieldset>
 
+" XPT sdiv alias=_t
+
+" XPT diva " tips
+" `:div( { 'content' : ':a:' } ):^
 
 
 " html 5
