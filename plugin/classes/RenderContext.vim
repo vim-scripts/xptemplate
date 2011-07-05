@@ -55,7 +55,18 @@ fun! s:New( x ) dict
           \   'lastContent'        : '',
           \   'snipSetting'        : {},
           \   'tmpmappings'        : {},
+          \   'oriIndentkeys'      : {},
+          \   'leadingCharToReindent' : {},
           \ }, 'force' )
+    let indentkeysList = split( &indentkeys, ',' )
+    call filter( indentkeysList, 'v:val=~''\V\^0''' )
+    for k in indentkeysList
+        if k[ 1 ] == '='
+            let self.oriIndentkeys[ k[ 2: ] ] = 1
+        else
+            let self.leadingCharToReindent[ k[ 1: ] ] = 1
+        endif
+    endfor
 endfunction 
 fun! s:SwitchPhase( nextPhase ) dict 
     if -1 == match( s:phaseGraph[ self.phase ], '\V\<' . a:nextPhase . '\>' )

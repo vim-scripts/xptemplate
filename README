@@ -28,7 +28,8 @@ Press <tab>,<tab>.. to navigate through "i", "0", "len". Cursor will finally sto
 
 Screencast : 0.3.9 :  http://code.google.com/p/xptemplate/wiki/ScreenCasts;
 
-Get the latest trunk from svn : http://xptemplate.googlecode.com/svn/trunk/dist;
+Get From SVN: http://xptemplate.googlecode.com/svn/trunk/dist;
+Get From GIT(/dist ): git://github.com/drmingdrmer/xptemplate.git;
 Project Home : http://code.google.com/p/xptemplate;
 Discuss, Bug report, Feature request : http://groups.google.com/group/xptemplate;
 Follow me: http://twitter.com/xptemplate;
